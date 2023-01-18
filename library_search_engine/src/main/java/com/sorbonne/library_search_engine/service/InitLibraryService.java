@@ -3,25 +3,23 @@ package com.sorbonne.library_search_engine.service;
 import com.sorbonne.library_search_engine.modele.Book;
 import com.sorbonne.library_search_engine.modele.BookList;
 import com.sorbonne.library_search_engine.modele.Format;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @version 1.0
  * @Author Hongyu YAN & Liuyi CHEN
  * @Date 2023/1/16
  */
+@Slf4j
 @Service
 public class InitLibraryService {
     @Autowired
@@ -32,17 +30,27 @@ public class InitLibraryService {
      * @return
      */
     @Bean
-    public Map<Integer, Book> fetchBooks() {
+    public Map<Integer, Book> fetchBooks() throws IOException, ClassNotFoundException {
+        Map<Integer, Book> library = new HashMap<>();
+        ArrayList<Book> books;
+
+        // Books have been initialized
+        if(new File("books.ser").exists()) {
+            log.info("Books have been downloaded, start initializing the library");
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("books.ser"));
+            library = (Map<Integer, Book>) ois.readObject();
+            ois.close();
+            return library;
+        }
+
         File folder = new File("books");
         if (!folder.exists() || !folder.isDirectory()) {
             folder.mkdirs();
         }
 
-        Map<Integer, Book> library = new ConcurrentHashMap<>();
-        ArrayList<Book> books;
-
+        log.info("Start downloading books from Gutendex API and initializing the library");
         BookList bookList = restTemplate.getForObject("https://gutendex.com/books", BookList.class);
-        while (library.size() < 1664) {
+        while (library.size() < 30) {
             books = bookList.getResults();
             for (Book book : books) {
                 try {
@@ -50,6 +58,8 @@ public class InitLibraryService {
                     Format format = book.getFormats();
                     String textURL = getTextURL(format);
                     if (textURL == null) continue;
+                    book.setContent(textURL);
+                    if (format.getCoverImage() != null) book.setImage(format.getCoverImage());
                     String text = restTemplate.getForObject(textURL, String.class);
                     if (text != null && text.split("\\s+").length > 10000) {
                         PrintWriter pw = new PrintWriter(new FileOutputStream("books/" + book.getId() + ".txt"));
@@ -62,10 +72,18 @@ public class InitLibraryService {
                 } catch (HttpClientErrorException | FileNotFoundException e) {
                 }
             }
+            log.info(library.size() + " books have been downloaded");
             String nextPageURL = bookList.getNext();
             bookList = restTemplate.getForObject(nextPageURL, BookList.class);
         }
-        System.out.println(library.size());
+
+        log.info("saving books.ser file");
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("books.ser"));
+        oos.writeObject(library);
+        oos.flush();
+        oos.close();
+
+        log.info("Congratulations ! " + library.size() + " books have been downloaded");
         return library;
     }
 
