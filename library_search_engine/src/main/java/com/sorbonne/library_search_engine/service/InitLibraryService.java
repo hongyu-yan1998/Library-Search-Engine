@@ -30,7 +30,7 @@ public class InitLibraryService {
      * @return
      */
     @Bean
-    public Map<Integer, Book> fetchBooks() throws IOException, ClassNotFoundException {
+    public Map<Integer, Book> library() throws IOException, ClassNotFoundException {
         Map<Integer, Book> library = new HashMap<>();
         ArrayList<Book> books;
 

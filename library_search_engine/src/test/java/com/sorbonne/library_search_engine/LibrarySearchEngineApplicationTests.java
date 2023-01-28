@@ -1,12 +1,15 @@
 package com.sorbonne.library_search_engine;
 
 import com.sorbonne.library_search_engine.utils.graph.GraphRanking;
+import com.sorbonne.library_search_engine.utils.keywords.Keyword;
+import com.sorbonne.library_search_engine.utils.keywords.KeywordsExtractor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,4 +36,10 @@ class LibrarySearchEngineApplicationTests {
         System.out.println(GraphRanking.calculateJaccardDistance(table1, table2));
     }
 
+    @Test
+    void testBuildKeyWordsList() throws IOException {
+        List<Keyword> keywords =
+                KeywordsExtractor.buildKeyWordsList("books/11.txt", "en");
+        System.out.println(keywords.toString());
+    }
 }
