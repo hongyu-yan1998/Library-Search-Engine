@@ -17,9 +17,8 @@ import java.util.*;
 @Slf4j
 @Component
 public class GraphRanking {
-
     @Autowired
-    private static KeywordDictionary keywordDictionary;
+    private KeywordDictionary keywordDictionary;
 
     /**
      * calculate the jaccard distance between the index tables
@@ -27,7 +26,7 @@ public class GraphRanking {
      * @param table2 second index table
      * @return the jaccard distance between the index tables
      */
-    public static Double calculateJaccardDistance(HashMap<String, Double> table1, HashMap<String, Double> table2) {
+    public Double calculateJaccardDistance(HashMap<String, Double> table1, HashMap<String, Double> table2) {
         double numerator = 0;
         double denominator = 0;
         HashMap<String, Double> tab2 = table2;
@@ -51,7 +50,7 @@ public class GraphRanking {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public static HashMap<Integer, HashMap<Integer, Double>> buildJaccardMatrice() throws IOException, ClassNotFoundException {
+    public HashMap<Integer, HashMap<Integer, Double>> buildJaccardMatrice() throws IOException, ClassNotFoundException {
         HashMap<Integer, HashMap<Integer, Double>> jaccardMatrice = new HashMap<>();
         if (new File("jaccard.ser").exists()){
             log.info("Loading Jaccard distance matrice ...");
@@ -103,7 +102,7 @@ public class GraphRanking {
      * @throws ClassNotFoundException
      */
     @Bean
-    public static LinkedHashMap<Integer, Double> closenessCentrality() throws IOException, ClassNotFoundException {
+    public LinkedHashMap<Integer, Double> closenessCentrality() throws IOException, ClassNotFoundException {
         LinkedHashMap<Integer, Double> closenessMap = new LinkedHashMap<>();
         if (new File("closeness.ser").exists()){
             log.info("Loading Closeness Centrality Ranking ...");

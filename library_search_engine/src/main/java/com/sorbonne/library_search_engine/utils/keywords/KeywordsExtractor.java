@@ -1,6 +1,5 @@
 package com.sorbonne.library_search_engine.utils.keywords;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.StopFilter;

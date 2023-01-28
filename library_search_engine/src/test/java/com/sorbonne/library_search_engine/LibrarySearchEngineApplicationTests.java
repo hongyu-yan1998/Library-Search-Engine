@@ -4,6 +4,7 @@ import com.sorbonne.library_search_engine.utils.graph.GraphRanking;
 import com.sorbonne.library_search_engine.utils.keywords.Keyword;
 import com.sorbonne.library_search_engine.utils.keywords.KeywordsExtractor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
@@ -18,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LibrarySearchEngineApplicationTests {
 
     private LinkedHashMap<Integer, Double> closenessCentrality;
+    @Autowired
+    private GraphRanking graphRanking;
 
     @Test
     void contextLoads() {
@@ -33,7 +36,7 @@ class LibrarySearchEngineApplicationTests {
         table2.put("Sargon", 2.0);
         table2.put("Babylon", 3.0);
         table2.put("soi", 1.0);
-        System.out.println(GraphRanking.calculateJaccardDistance(table1, table2));
+        System.out.println(graphRanking.calculateJaccardDistance(table1, table2));
     }
 
     @Test
