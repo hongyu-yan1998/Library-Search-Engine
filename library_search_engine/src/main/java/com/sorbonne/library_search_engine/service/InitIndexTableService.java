@@ -18,7 +18,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class initIndexTableService {
+public class InitIndexTableService {
     @Bean
     public KeywordDictionary keywordDictionary (Map<Integer, Book> library) throws IOException, ClassNotFoundException {
         if (new File("keywords.ser").exists()){
@@ -86,7 +86,8 @@ public class initIndexTableService {
         return dictionary;
     }
 
-    public static HashSet<String> splitWords(String text, String languageCode) throws IOException {
+
+    public HashSet<String> splitWords(String text, String languageCode) throws IOException {
         Set<Character> alphabet = getAlphabet(languageCode);
         HashSet<String> words = new HashSet<>();
         StringBuilder currentWord = new StringBuilder();
@@ -109,7 +110,7 @@ public class initIndexTableService {
         return words;
     }
 
-    public static Set<Character> getAlphabet(String languageCode){
+    public Set<Character> getAlphabet(String languageCode){
         Set<Character> alphabet = new HashSet<>();
         String filename = "language/" + languageCode + "/alphabet.txt";
         BufferedReader reader = null;

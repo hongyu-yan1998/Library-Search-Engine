@@ -1,8 +1,10 @@
 package com.sorbonne.library_search_engine;
 
+import com.sorbonne.library_search_engine.service.BookService;
 import com.sorbonne.library_search_engine.utils.graph.GraphRanking;
 import com.sorbonne.library_search_engine.utils.keywords.Keyword;
 import com.sorbonne.library_search_engine.utils.keywords.KeywordsExtractor;
+import com.sorbonne.library_search_engine.utils.research.RegEx;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,14 +15,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class LibrarySearchEngineApplicationTests {
-
-    private LinkedHashMap<Integer, Double> closenessCentrality;
     @Autowired
     private GraphRanking graphRanking;
+    @Autowired
+    private BookService bookService;
 
     @Test
     void contextLoads() {
@@ -44,5 +47,20 @@ class LibrarySearchEngineApplicationTests {
         List<Keyword> keywords =
                 KeywordsExtractor.buildKeyWordsList("books/11.txt", "en");
         System.out.println(keywords.toString());
+    }
+
+    @Test
+    void testGetBooksByKeyword() {
+        System.out.println(bookService.getBooksByKeyword("babylon"));
+    }
+
+    @Test
+    void testGetBooksByRegex() {
+        System.out.println(bookService.getBooksByRegex("baby*lon"));
+    }
+
+    @Test
+    void test() throws IOException {
+        System.out.println(KeywordsExtractor.getStem("babylon"));
     }
 }
