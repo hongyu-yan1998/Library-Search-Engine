@@ -132,7 +132,7 @@ public class GraphRanking {
 
         log.info("saving closeness.ser file");
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("closeness.ser"));
-        oos.writeObject(closenessMap);
+        oos.writeObject(result);
         oos.flush();
         oos.close();
 
