@@ -58,9 +58,4 @@ class LibrarySearchEngineApplicationTests {
     void testGetBooksByRegex() {
         System.out.println(bookService.getBooksByRegex("baby*lon"));
     }
-
-    @Test
-    void test() throws IOException {
-        System.out.println(KeywordsExtractor.getStem("babylon"));
-    }
 }

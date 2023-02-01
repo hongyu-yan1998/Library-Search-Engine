@@ -19,6 +19,10 @@ public class BookService {
     private Map<Integer, Book> library;
     @Autowired
     private KeywordDictionary keywordDictionary;
+    @Autowired
+    LinkedHashMap<Integer, Double> closenessCentrality;
+
+
     public Book getBookById(int id){
         try {
             return library.get(id);
@@ -48,9 +52,9 @@ public class BookService {
     }
 
     /**
-     *
-     * @param regEx
-     * @return
+     * search books containing text matching the regex given in parameter
+     * @param regEx the regex to match in books' contenu
+     * @return the books which contain text matching the regex given in parameter
      */
     public List<Book> getBooksByRegex(String regEx) {
         ArrayList<Book> books = new ArrayList<>();
@@ -75,6 +79,22 @@ public class BookService {
         return books;
     }
 
+    /**
+     * sort the books by Closeness Centrality
+     * @param books
+     * @return the list of books sorted by Closeness Centrality
+     */
+    public void sortBooksByCloseness(List<Book> books){
+        List<Integer> orderedIds = new ArrayList<>(closenessCentrality.keySet());
+        books.sort(Comparator.comparing(book -> orderedIds.indexOf(book.getId())));
+    }
+
+    /**
+     * sort the books by relevancy of the text
+     * @param map
+     * @return the map sorted by relevancy
+     * @param <T>
+     */
     public <T> LinkedHashMap<T, Double> sortMapByRelevancy(Map<T, Double> map) {
         List<Map.Entry<T, Double>> entryList = new ArrayList<>(map.entrySet());
         entryList.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
