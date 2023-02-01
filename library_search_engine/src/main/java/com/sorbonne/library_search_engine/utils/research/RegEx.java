@@ -19,27 +19,8 @@ public class RegEx {
     //CONSTRUCTOR
     public RegEx(){}
 
-    //MAIN
-    public static boolean verifyRegEx(String regEx, String word) {
-        if (regEx.length()<1) {
-            log.info("  >> ERROR: empty regEx.");
-            return false;
-        } else {
-            RegExTree ret = null;
-            try {
-                ret = parse(regEx);
-            } catch (Exception e) {
-                System.err.println("  >> ERROR: syntax error for regEx \""+regEx+"\".");
-            }
-            NDFAutomaton ndfAutomaton = NDFAutomaton.regExTree2NFA(ret);
-            DFAutomaton dfAutomaton = DFAutomaton.NFA2DFA(ndfAutomaton);
-            return dfAutomaton.search(word);
-        }
-
-    }
-
     //FROM REGEX TO SYNTAX TREE
-    private static RegExTree parse(String regEx) throws Exception {
+    public static RegExTree parse(String regEx) throws Exception {
         //BEGIN DEBUG: set conditionnal to true for debug example
         if (false) throw new Exception();
         RegExTree example = exampleAhoUllman();

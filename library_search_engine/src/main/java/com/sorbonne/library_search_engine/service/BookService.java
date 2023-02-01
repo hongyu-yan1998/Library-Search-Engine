@@ -2,7 +2,11 @@ package com.sorbonne.library_search_engine.service;
 
 import com.sorbonne.library_search_engine.modele.Book;
 import com.sorbonne.library_search_engine.utils.keywords.KeywordDictionary;
+import com.sorbonne.library_search_engine.utils.research.DFAutomaton;
+import com.sorbonne.library_search_engine.utils.research.NDFAutomaton;
 import com.sorbonne.library_search_engine.utils.research.RegEx;
+import com.sorbonne.library_search_engine.utils.research.RegExTree;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,7 @@ import java.util.*;
  * @Date 2023/1/2
  */
 @Service
+@Slf4j
 public class BookService {
     @Autowired
     private Map<Integer, Book> library;
@@ -56,14 +61,51 @@ public class BookService {
      * @param regEx the regex to match in books' contenu
      * @return the books which contain text matching the regex given in parameter
      */
+//    public List<Book> getBooksByRegex(String regEx) {
+//        ArrayList<Book> books = new ArrayList<>();
+//        HashMap<String, String> word2stem = keywordDictionary.getWord2stem();
+//        HashSet stems = new HashSet();
+//        for (String word : word2stem.keySet()) {
+//            if (RegEx.verifyRegEx(regEx.toLowerCase(), word)) {
+//                String stem = word2stem.get(word);
+//                stems.add(stem);
+//                HashMap<Integer, Double> keywordRelevance = keywordDictionary.getKeywordTable().get(stem);
+//                // sort the map by relevancy
+//                // LinkedHashMap<Integer, Double> result = sortMapByRelevancy(keywordRelevance);
+//
+//                for (int id : keywordRelevance.keySet()) {
+//                    Book book = getBookById(id);
+//                    if (books.contains(book)) continue;
+//                    books.add(book);
+//                }
+//            }
+//        }
+//        return books;
+//    }
+
     public List<Book> getBooksByRegex(String regEx) {
         ArrayList<Book> books = new ArrayList<>();
+        RegExTree ret;
+        if (regEx.length()<1) {
+            System.err.println("  >> ERROR: empty regEx.");
+            return books;
+        } else {
+            try {
+                ret = RegEx.parse(regEx.toLowerCase());
+            } catch (Exception e) {
+                System.err.println("  >> ERROR: syntax error for regEx \""+regEx+"\".");
+                return books;
+            }
+        }
+
+        NDFAutomaton ndfAutomaton = NDFAutomaton.regExTree2NFA(ret);
+        DFAutomaton dfAutomaton = DFAutomaton.NFA2DFA(ndfAutomaton);
+
         HashMap<String, String> word2stem = keywordDictionary.getWord2stem();
         HashSet stems = new HashSet();
         for (String word : word2stem.keySet()) {
-            if (RegEx.verifyRegEx(regEx.toLowerCase(), word)) {
+            if (dfAutomaton.search(word)) {
                 String stem = word2stem.get(word);
-                if (stems.contains(stem)) continue;
                 stems.add(stem);
                 HashMap<Integer, Double> keywordRelevance = keywordDictionary.getKeywordTable().get(stem);
                 // sort the map by relevancy
