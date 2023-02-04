@@ -97,6 +97,47 @@ public class GraphRanking {
 
     /**
      *
+     * @return the book id and its jaccard neighbors
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    @Bean
+    public HashMap<Integer, ArrayList<Integer>> jaccardMatriceNeighbor() throws IOException, ClassNotFoundException {
+        HashMap<Integer, ArrayList<Integer>> jaccardMatriceNeighbor = new HashMap<>();
+        if (new File("jaccardNeighbor.ser").exists()){
+            log.info("Loading Jaccard matrice neighbor ...");
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("jaccardNeighbor.ser"));
+            jaccardMatriceNeighbor = (HashMap<Integer, ArrayList<Integer>>) ois.readObject();
+            ois.close();
+            return jaccardMatriceNeighbor;
+        }
+
+        HashMap<Integer, HashMap<Integer, Double>> jaccardMatrice = buildJaccardMatrice();
+        Set<Integer> ids = jaccardMatrice.keySet();
+        for (int id : ids) {
+            HashMap<Integer, Double> map = jaccardMatrice.get(id);
+            map.entrySet().removeIf(m -> m.getValue() > 0.8);
+            // sort the map
+            List<Map.Entry<Integer, Double>> entryList = new ArrayList<>(map.entrySet());
+            entryList.sort(Comparator.comparing(Map.Entry::getValue));
+            ArrayList<Integer> result = new ArrayList<>();
+            for (Map.Entry<Integer, Double> entry : entryList) {
+                result.add(entry.getKey());
+            }
+            jaccardMatriceNeighbor.put(id, result);
+        }
+
+        log.info("saving jaccardNeighbor.ser file");
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("jaccardNeighbor.ser"));
+        oos.writeObject(jaccardMatriceNeighbor);
+        oos.flush();
+        oos.close();
+
+        return jaccardMatriceNeighbor;
+    }
+
+    /**
+     *
      * @return the map of closeness centrality
      * @throws IOException
      * @throws ClassNotFoundException

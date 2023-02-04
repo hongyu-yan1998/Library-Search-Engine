@@ -6,6 +6,7 @@ import com.sorbonne.library_search_engine.utils.research.DFAutomaton;
 import com.sorbonne.library_search_engine.utils.research.NDFAutomaton;
 import com.sorbonne.library_search_engine.utils.research.RegEx;
 import com.sorbonne.library_search_engine.utils.research.RegExTree;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
+@Data
 public class BookService {
     @Autowired
     private Map<Integer, Book> library;
@@ -26,6 +28,8 @@ public class BookService {
     private KeywordDictionary keywordDictionary;
     @Autowired
     LinkedHashMap<Integer, Double> closenessCentrality;
+    @Autowired
+    HashMap<Integer, ArrayList<Integer>> jaccardMatriceNeighbor;
 
 
     public Book getBookById(int id){
@@ -61,28 +65,6 @@ public class BookService {
      * @param regEx the regex to match in books' contenu
      * @return the books which contain text matching the regex given in parameter
      */
-//    public List<Book> getBooksByRegex(String regEx) {
-//        ArrayList<Book> books = new ArrayList<>();
-//        HashMap<String, String> word2stem = keywordDictionary.getWord2stem();
-//        HashSet stems = new HashSet();
-//        for (String word : word2stem.keySet()) {
-//            if (RegEx.verifyRegEx(regEx.toLowerCase(), word)) {
-//                String stem = word2stem.get(word);
-//                stems.add(stem);
-//                HashMap<Integer, Double> keywordRelevance = keywordDictionary.getKeywordTable().get(stem);
-//                // sort the map by relevancy
-//                // LinkedHashMap<Integer, Double> result = sortMapByRelevancy(keywordRelevance);
-//
-//                for (int id : keywordRelevance.keySet()) {
-//                    Book book = getBookById(id);
-//                    if (books.contains(book)) continue;
-//                    books.add(book);
-//                }
-//            }
-//        }
-//        return books;
-//    }
-
     public List<Book> getBooksByRegex(String regEx) {
         ArrayList<Book> books = new ArrayList<>();
         RegExTree ret;
@@ -145,5 +127,13 @@ public class BookService {
             result.put(entry.getKey(), entry.getValue());
         }
         return result;
+    }
+
+    public List<Book> getNeighborBookByJaccard(int id){
+        ArrayList<Book> books = new ArrayList<>();
+        for (int neighborId : jaccardMatriceNeighbor.get(id)){
+            books.add(getBookById(neighborId));
+        }
+        return books;
     }
 }

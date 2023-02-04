@@ -5,12 +5,10 @@ import com.sorbonne.library_search_engine.service.BookService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -21,11 +19,18 @@ import java.util.List;
  */
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000/")
 @RequestMapping("/books")
 @Slf4j
 public class BookController {
     @Autowired
     private BookService bookService;
+
+    @GetMapping
+    public ResponseEntity<List<Book>> getBooks() {
+        ArrayList<Book> books = new ArrayList<>(bookService.getLibrary().values());
+        return ResponseEntity.ok(books); // 200 OK
+    }
 
     @GetMapping("{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Integer id) {
@@ -55,4 +60,11 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
+    @GetMapping("/suggestion/{id}")
+    public ResponseEntity<List<Book>> getRecommendedBooks(@PathVariable int id) {
+        log.info("Get recommended books for the book : " + id);
+
+        ArrayList<Book> books = (ArrayList<Book>) bookService.getNeighborBookByJaccard(id);
+        return ResponseEntity.ok(books); // 200 OK
+    }
 }
