@@ -50,7 +50,7 @@ public class InitLibraryService {
 
         log.info("Start downloading books from Gutendex API and initializing the library");
         BookList bookList = restTemplate.getForObject("https://gutendex.com/books", BookList.class);
-        while (library.size() < 30) {
+        while (library.size() < 1500) {
             books = bookList.getResults();
             for (Book book : books) {
                 try {

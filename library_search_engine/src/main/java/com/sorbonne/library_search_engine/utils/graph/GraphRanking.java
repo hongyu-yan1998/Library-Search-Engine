@@ -60,6 +60,7 @@ public class GraphRanking {
             return jaccardMatrice;
         }
 
+        log.info("Start Jaccard distance matrice ...");
         HashMap<Integer, HashMap<String, Double>> keywordBookTable = keywordDictionary.getKeywordBookTable();
         Set<Integer> ids = keywordBookTable.keySet();
         for (int id1 : ids) {
@@ -112,6 +113,7 @@ public class GraphRanking {
             return jaccardMatriceNeighbor;
         }
 
+        log.info("Start building Jaccard matrice neighbor ...");
         HashMap<Integer, HashMap<Integer, Double>> jaccardMatrice = buildJaccardMatrice();
         Set<Integer> ids = jaccardMatrice.keySet();
         for (int id : ids) {
@@ -153,6 +155,7 @@ public class GraphRanking {
             return closenessMap;
         }
 
+        log.info("Start building Closeness Centrality Ranking ...");
         HashMap<Integer, HashMap<Integer, Double>> jaccardMatrice = buildJaccardMatrice();
         int nbBooks = jaccardMatrice.size();
         for (int id : jaccardMatrice.keySet()) {

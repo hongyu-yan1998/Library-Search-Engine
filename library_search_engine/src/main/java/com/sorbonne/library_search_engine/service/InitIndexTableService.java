@@ -29,6 +29,7 @@ public class InitIndexTableService {
             return dictionary;
         }
 
+        log.info("Start building dictionary of keywords");
         HashMap<String, String> word2stem = new HashMap<>();
         HashMap<String, HashMap<Integer, Double>> keywordTable = new HashMap<>();
         HashMap<Integer, HashMap<String, Double>> keywordBookTable = new HashMap<>();
